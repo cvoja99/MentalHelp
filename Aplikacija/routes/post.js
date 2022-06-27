@@ -1,13 +1,20 @@
 const express = require('express');
-const {Post,User} = require('../models');
+const {Post,User,Comment} = require('../models');
 const router = express.Router();
-
-router.delete("/:id", async(req,res) =>{
-    const id = req.params.id;
+const auth=require('../middleware/auth');
+const checkPermissions = require('../utils/helpers');
+router.delete("/:id", auth,async(req,res) =>{
+    const id = req.user.id;
     try{
         const post = await Post.findOne({
             where: {id}
         });
+        if(!post){
+            return res.status(404).json({err:"Post not found"});
+        }
+        if(!checkPermissions(post.user, req.user)) {
+            return res.status(403).json({err:"Forbidden"});
+        }
         await post.destroy();
         return res.json({message: "Post Deleted"});
     }catch(err){
@@ -15,10 +22,10 @@ router.delete("/:id", async(req,res) =>{
     }
 });
 router.post("/", async(req,res) =>{
-    const { title,body,description,image, userId} = req.body
+    const { title,body,description,image} = req.body
     try{
         const user = await User.findOne({
-            where: {id: userId}
+            where: {id: req.user.id}
         });
         if (!user)
         throw "User nije pronadjen";
@@ -28,7 +35,7 @@ router.post("/", async(req,res) =>{
         return res.status(500).json(err);
     }
 });
-router.get("/", async(req,res) =>{
+router.get("/", auth,async(req,res) =>{
     try{
         const id=req.body.id;
         const offset=req.body.offset;
@@ -43,13 +50,32 @@ router.get("/", async(req,res) =>{
         return res.status(500).json(err);
     }
 });
-router.put("/:id", async(req,res) =>{
-    const id = req.params.id;
+router.get("/", async(req,res) =>{
+    try{
+        const id=req.body.id;
+        const post = await Post.findOne({
+            where:{userId:id},
+            include: {model: Comment, as: 'comment',
+            limit:10,
+            offset:0
+        }
+
+        });
+        return res.json(post);
+    }catch(err){
+        return res.status(500).json(err);
+    }
+});
+router.put("/:id", auth,async(req,res) =>{
+    const id = req.user.id;
     const { title, body, description,image} = req.body;
     try{
         const post = await Post.findOne({
             where: {id}
         });
+        if(!post){
+            return res.status(404).json({err:"Post not found"});
+        }
         post.title = title;
         post.body = body;
         post.description = description;

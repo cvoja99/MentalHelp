@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({User,Comment}) {
-      // define association here
+    static associate({User,Comment,PostVotes}) {
       this.belongsTo(User,{foreignKey: `userId`, as:'user'});
       this.hasMany(Comment,{foreignKey:'postId', as:'post'});
+      this.hasMany(PostVotes,{foreignKey:'votesId',as:'postVotes'});
     }
   }
   Post.init({
@@ -37,7 +37,9 @@ module.exports = (sequelize, DataTypes) => {
         len:[0,50]
       }
     },
-    image: DataTypes.STRING,
+    votes:{
+      type: DataTypes.INTEGER,
+      defaultValue:0},
     userId: 
     {
     type:DataTypes.INTEGER,
