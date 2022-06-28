@@ -1,5 +1,5 @@
 const express = require('express');
-const {Post,User,Comment} = require('../models');
+const {Post,User,Comment, Sequelize} = require('../models');
 const router = express.Router();
 const auth=require('../middleware/auth');
 const checkPermissions = require('../utils/helpers');
@@ -21,7 +21,7 @@ router.delete("/:id", auth,async(req,res) =>{
         return res.status(500).json({err: "An error occured"});
     }
 });
-router.post("/", async(req,res) =>{
+router.post("/",auth, async(req,res) =>{
     const { title,body,description,image} = req.body
     try{
         const user = await User.findOne({
@@ -42,27 +42,36 @@ router.get("/", auth,async(req,res) =>{
         const posts = await Post.findAll({
             where:{userId:id},
             limit:10,
-            offset:{offset}||0
-
+            offset:0,
+            include: {model: Comment, as: 'commentId'},
+            attributes:{
+                include: [
+                [Sequelize.literal("(SELECT COUNT(*) FROM PostVotes where PostVotes.postId=Post.id)"), "votes"]
+            ]
+            },  
         });
         return res.json(posts);
     }catch(err){
         return res.status(500).json(err);
     }
 });
-router.get("/", async(req,res) =>{
+router.get("/:id", async(req,res) =>{
     try{
-        const id=req.body.id;
+        const id=req.params.id;
         const post = await Post.findOne({
             where:{userId:id},
-            include: {model: Comment, as: 'comment',
             limit:10,
-            offset:0
-        }
-
+            offset:0,
+            include: {model: Comment, as: 'commentId'},
+            attributes:{
+                include: [
+                [Sequelize.literal("(SELECT COUNT(*) FROM PostVotes where PostVotes.postId=Post.id)"), "votes"]
+            ]
+            },  
         });
         return res.json(post);
     }catch(err){
+        console.log(err);
         return res.status(500).json(err);
     }
 });

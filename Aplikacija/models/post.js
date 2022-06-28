@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({User,Comment,PostVotes}) {
       this.belongsTo(User,{foreignKey: `userId`, as:'user'});
-      this.hasMany(Comment,{foreignKey:'postId', as:'post'});
+      this.hasMany(Comment,{foreignKey:'commentId', as:'commentId'});
       this.hasMany(PostVotes,{foreignKey:'votesId',as:'postVotes'});
     }
   }
@@ -37,9 +37,6 @@ module.exports = (sequelize, DataTypes) => {
         len:[0,50]
       }
     },
-    votes:{
-      type: DataTypes.INTEGER,
-      defaultValue:0},
     userId: 
     {
     type:DataTypes.INTEGER,

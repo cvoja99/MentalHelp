@@ -3,8 +3,9 @@ const postRouter=require("./routes/post");
 const commentRouter=require("./routes/comment");
 const whisperRouter=require("./routes/whisper");
 const authRouter=require("./routes/auth");
+const votesRouter=require("./routes/votes");
 const express= require('express');
-const {sequelize,User,Post,Comment} = require('./models');
+const {sequelize} = require('./models');
 const app=express();
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
@@ -15,6 +16,7 @@ app.use("/posts",postRouter);
 app.use("/comments",commentRouter);
 app.use("/whispers",whisperRouter);
 app.use("/auth",authRouter);
+app.use("/votes",votesRouter);
 const PORT=process.env.PORT|| 5000;
 
 

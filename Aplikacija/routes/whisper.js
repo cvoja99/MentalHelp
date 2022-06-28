@@ -2,6 +2,7 @@ const express = require('express');
 const { body } = require('express-validator');
 const {Whisper,User} = require('../models');
 const router = express.Router();
+const auth=require('../middleware/auth');
 router.post("/", async(req,res) =>{
     const { userId,targetuserId,body } = req.body;
     try{
@@ -33,17 +34,18 @@ router.delete("/:id", async(req,res) =>{
         return res.status(500).json({err: "An error occured"});
     }
 });
-router.get("/", async(req,res) =>{
-    const {userId,targetuserId}=req.body;
+router.get("/", auth,async(req,res) =>{
+    const {targetuserId,offset}=req.body;
+    const id=req.user.id;
     offset=req.body.offset;
     try{
-        if (!userId)
+        if (!req.user.id)
         throw "User sa tim idem nije pronadjen";
         let whispers;
         if (!targetuserId)
         {
              whispers = await Whisper.findAll({
-                where:{userId,targetuserId},
+                where:{id,targetuserId},
                 limit:10,
                 offset:{offset}||0
             });
