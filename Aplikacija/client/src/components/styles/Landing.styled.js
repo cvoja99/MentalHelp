@@ -1,10 +1,10 @@
 import styled from "styled-components";
 
 export const LandingStyled =styled.div`
-   
 `
 export const TopNav=styled.nav`
     position:fixed;
+    top: 0;
     background-color:#ADD8E6;
     width:100%;
     justify-content:space-between;

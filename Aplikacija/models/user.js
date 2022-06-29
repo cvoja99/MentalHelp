@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate({Post,Comment}) {
-      // define association here
       this.hasMany(Post,{foreignKey:'userId',as:'posts'});
       this.hasMany(Comment,{foreignKey:'commentId',as:'commentId'});
     }
@@ -27,16 +26,27 @@ module.exports = (sequelize, DataTypes) => {
       unique:true,
       validate:{
         isEmail:true,
+        notEmpty:true,
+        notNull:true
       }
     },
     password:{
       type:DataTypes.STRING,
       allowNull:false,
+      validate:{
+        notEmpty:true,
+        notNull:true
+      }
     },
     username:{
       type:DataTypes.STRING,
       allowNull:false,
-      unique:true
+      unique:true,
+      validate:{
+        notEmpty:true,
+        notNull:true
+      }
+     
     }
   },
   {

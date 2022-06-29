@@ -3,21 +3,24 @@ const {User} = require('../models');
 const router = express.Router();
 const bcrypt=require("bcryptjs");
 const jwt=require("jsonwebtoken");
-const config = require('config')
+const config = require('config');
 router.post("/", async(req,res) =>{
 const { tip, email, password,username} = req.body
 try{
+    if(password=='')
+    throw "Password cannot be empty";
     const tryemail=await User.findOne({where:{email}});
     if (tryemail!=null){
-        throw "user sa tim emailom vec postoji";
+        throw "User already exists!";
     }
     const tryuser=await User.findOne({where:{username}});
     if (tryuser!=null){
-        throw "User sa tim usernameom vec postoji "
+        throw "User already exists!"
     }
     const salt=await bcrypt.genSalt(10);
     const pass=await bcrypt.hash(password,salt);
     const user = await User.create({tip, email,password:pass,username});
+    
     const payload={
         user:{
             id:user.id
@@ -34,6 +37,15 @@ try{
     );
     return res.json(user);
 }catch(err){
+    console.log(err);
+    if (typeof err==="string")
+    {return res.status(500).json({message:err});}
+    if(err.errors[0].message==='Validation isEmail on email failed')
+    {return res.status(500).json({message:'Email is not valid'});}
+    if(err.errors[0].message==='Validation notEmpty on username failed')
+    {return res.status(500).json({message:'Username cannot be empty'});}
+    if(err.errors[0].message==='Validation notEmpty on password failed')
+    {return res.status(500).json({message:'Password cannot be empty'});}
     return res.status(500).json(err);
 }})
 router.get("/:id", async(req,res) =>{
@@ -51,11 +63,11 @@ router.put("/:id", async(req,res) =>{
     try{
         const tryemail=await User.findOne({email});
         if (tryemail!=null){
-            throw "user sa tim emailom vec postoji";
+            throw "User already exists!";
         }
         const tryuser=await User.findOne({username});
         if (tryuser!=null){
-            throw "User sa tim usernameom vec postoji "
+            throw "User already exists!";
         }
         const user = await User.findOne({
             where: {id}

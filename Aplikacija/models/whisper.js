@@ -14,8 +14,16 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Whisper.init({
-    userId: DataTypes.INTEGER,
-    targetuserId: DataTypes.INTEGER,
+    userId: 
+    {
+    type:DataTypes.INTEGER,
+    allowNull: false
+  },
+    targetuserId: 
+    {
+    type:DataTypes.INTEGER,
+    allowNull: false
+  },
     body: DataTypes.STRING
   }, {
     sequelize,

@@ -7,7 +7,7 @@ const landing = () => {
     <LandingStyled>
       <TopNav>
         <Auth>
-            <ul>
+            <ul className='list-style: none"'>
             <LogoStyledPlacement> MentalHelp</LogoStyledPlacement>
             <Button><li><Link to="/register">Sign up</Link></li></Button>
             <Button> <li><Link to="/login">Login</Link></li></Button>
