@@ -5,9 +5,11 @@ import Paper from "@mui/material/Paper";
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { GET_COMMENTS  } from "../actions/types";
+import { COMMENT_LOADING, GET_COMMENTS  } from "../actions/types";
 import axios from '../utils/axios';
 import moment from 'moment';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
 const DeleteIconDiv=styled.div`
     display: flex;
@@ -18,7 +20,20 @@ const DeleteIconDiv=styled.div`
     align-items: flex-end;
     justify-content: flex-end;
 `
+const delay = ms => new Promise(res => setTimeout(res, ms));
 function CommentBox({comments, postId, onEdit}) {
+  const onVote = async (id) => {
+    try {
+    dispatch({type:COMMENT_LOADING})
+    await delay(400);
+    const res = await axios.post("http://localhost:5000/votes/comment", {commentId: id})
+    console.log(res);
+    const res2 = await axios.get(`http://localhost:5000/comments/${postId}`)
+    dispatch({type: GET_COMMENTS, payload: res2.data })
+    } catch(e) {
+        console.error(e);
+    }
+}
   console.log({comments});  
   const dispatch = useDispatch();
   const onDelete = async (id) => {
@@ -55,6 +70,14 @@ function CommentBox({comments, postId, onEdit}) {
              <p style={{ textAlign: "left", color: "gray" }}>
                Posted {moment(comment.createdAt).fromNow()}
              </p>
+             <Typography>
+          Votes: {comment.votes}
+        { isAuthenticated && (<Button size="small" onClick={(e) => {
+                  e.stopPropagation();
+
+          onVote(comment.id)}}>Vote</Button>)}
+
+      </Typography>
            </Grid>
          </Grid>
          <Divider variant="fullWidth" style={{ margin: "30px 0" }} />

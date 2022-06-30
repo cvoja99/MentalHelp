@@ -1,5 +1,5 @@
 const express = require('express');
-const {Comment,User,Post} = require('../models');
+const {Comment,User,Post, Sequelize} = require('../models');
 const router = express.Router();
 const auth=require('../middleware/auth');
 const checkPermissions = require('../utils/helpers');
@@ -62,6 +62,11 @@ router.get("/:postId", async(req,res) =>{
             where:{postId},
             limit:10,
             include: { model: User, as: 'user'},
+            attributes:{
+                include: [
+                [Sequelize.literal("(SELECT COUNT(*) FROM CommentVotes where CommentVotes.commentId=Comment.id)"), "votes"]
+            ]
+        },
             offset:offset||0
         }
             );
