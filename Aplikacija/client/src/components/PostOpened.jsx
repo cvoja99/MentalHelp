@@ -170,7 +170,12 @@ export default function OutlinedCard() {
             </Button>
           </Box>
     </Box>
-    <CommentBox comments={comments}>
+    <CommentBox comments={comments} postId={postId} onEdit={({id, body}) => {
+        setFormData({
+            id,
+            body
+        })
+    }}>
 
     </CommentBox>
     </React.Fragment>

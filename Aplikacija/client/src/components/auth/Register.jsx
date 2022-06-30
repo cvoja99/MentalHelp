@@ -8,14 +8,15 @@ import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import { REGISTER_FAIL, REGISTER_SUCCESS } from '../../actions/types';
 import { StyledTextField } from '../styles/StyledTextField';
-import {Link}from 'react-router-dom'
+import {Link, useNavigate}from 'react-router-dom'
 import { useDispatch,useSelector }from'react-redux';
-import PropTypes from 'prop-types';
+
 import CircularProgress from '@mui/material/CircularProgress';
-import { AUTH_ERROR, LOADING, USER_LOADED } from '../../actions/types';
+import { LOADING,} from '../../actions/types';
 const delay = ms => new Promise(res => setTimeout(res, ms));
 const Register = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -50,6 +51,7 @@ const Register = () => {
             type:REGISTER_SUCCESS,
             payload:res.data
         });
+        navigate("/forum");
     }
     catch(err){
         dispatch({

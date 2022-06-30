@@ -1,5 +1,6 @@
 import {
     GET_COMMENTS,
+    COMMENT_ERROR,
     COMMENT_LOADING
 }from '../actions/types'
 
@@ -15,6 +16,12 @@ export default function(state=initialState,action){
             return{
                 ...state,
                 comments:payload,
+                loading:false
+            }
+        case COMMENT_ERROR:
+            return{
+                ...state,
+                error:payload,
                 loading:false
             }
         case COMMENT_LOADING:

@@ -7,7 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import styled from 'styled-components';
-import {Link}from 'react-router-dom';
+import {Link, useNavigate}from 'react-router-dom';
 const StyledCard=styled(Card)`
 border:1px solid black;
 `
@@ -44,9 +44,10 @@ const bull = (
 
 export default function OutlinedCard({post, onEdit, onVote, onDelete, isAuthenticated}) {
   console.log(isAuthenticated);
+  let navigate = useNavigate(); 
+
   return (
-    <Link to={`/post/${post.id}`}>
-    <StyledBox sx={{ minWidth: 275, cursor: 'pointer' }} onClick={() => console.log("sadfd")}>
+    <StyledBox sx={{ minWidth: 275, cursor: 'pointer' }} onClick={() => navigate(`/post/${post.id}`)}>
       <StyledCard variant="outlined">
       <React.Fragment>
     <CardContent>
@@ -73,7 +74,10 @@ export default function OutlinedCard({post, onEdit, onVote, onDelete, isAuthenti
 
       <StyledTypography>
         Votes: {post.votes}
-        {isAuthenticated && (<Button size="small" onClick={onVote}>Vote</Button>)}
+        {isAuthenticated && (<Button size="small" onClick={(e) => {
+                  e.stopPropagation();
+
+          onVote()}}>Vote</Button>)}
 
       </StyledTypography>
     </StyledCardActions>
@@ -82,6 +86,5 @@ export default function OutlinedCard({post, onEdit, onVote, onDelete, isAuthenti
 
       </StyledCard>
     </StyledBox>
-    </Link>
   );
 }
