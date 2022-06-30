@@ -26,7 +26,7 @@ try{
             id:user.id
         }
     }
-    jwt.sign(
+    return jwt.sign(
         payload,
         config.get('jwtSecret'),
         {expiresIn: 360000},
@@ -35,7 +35,6 @@ try{
             console.log(token);
             res.json({token});}
     );
-    return res.json(user);
 }catch(err){
     console.log(err);
     if (typeof err==="string")

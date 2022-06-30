@@ -5,21 +5,61 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import axios from 'axios';
+import CircularProgress from '@mui/material/CircularProgress';
+import axios from '../../utils/axios';
+import { useDispatch, useSelector } from 'react-redux';
+import {Link} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+
+import { AUTH_ERROR, LOADING, USER_LOADED } from '../../actions/types';
+
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 const Login = () => {
+  let navigate = useNavigate(); 
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   })
-
+  const dispatch = useDispatch();
   const { email, password } = formData;
-  const handleSubmit = useCallback(() => {
-    axios.post('http://localhost:5000/auth', {email, password}).then(res => { console.log(res)}).catch(e => console.error(e.response));
-  },[email, password]);
+  const { loading } = useSelector(state => state.auth);
+  const handleSubmit = useCallback(async () => {
+    
+    
+      /*if (localStorage.token){
+        setAuthToken(localStorage.token);
+      }*/
 
-  console.log(formData);
-  return (
+      dispatch({
+        type: LOADING
+      })
+      try{
+
+        await delay(400);
+        const res=await axios.post('http://localhost:5000/auth', {email, password});
+        dispatch({
+          type:USER_LOADED,
+          payload:res.data
+        })
+        navigate("/forum");
+      }
+      catch(err){
+        dispatch({
+          type:AUTH_ERROR
+        })
+      }
+    }
+    /*axios.post('http://localhost:5000/auth', {email, password}).then(res => { console.log(res)}).catch(e => console.error(e.response));
+  }*/,[email, password,dispatch]);
+  /*if(isAuthenticated){
+    return <Redirect to="/forum"/>
+  }*/
+  return loading ? <Box sx={{ display: 'flex',  flexDirection: 'column',
+  alignItems: 'center',marginTop: 50 }}>
+  <CircularProgress />
+</Box>  : (
     <Container component="main" maxWidth="xs">
               <CssBaseline />
               <Box
@@ -55,7 +95,6 @@ const Login = () => {
               value={password}
               name="password"
               onInput={(e) => setFormData({...formData, password: e.target.value})}
-
               label="Password"
               type="password"
               id="password"
@@ -71,8 +110,10 @@ const Login = () => {
             </Button>
           </Box>
     </Box>
+    <p>
+      Don't have an account? <Link to='/register'>Sign Up</Link>
+    </p>
     </Container>
   )
 }
-
 export default Login

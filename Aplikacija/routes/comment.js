@@ -5,7 +5,7 @@ const auth=require('../middleware/auth');
 const checkPermissions = require('../utils/helpers');
 
 router.post("/", auth,async(req,res) =>{
-    const {postId,votes,body} = req.body
+    const {postId,body} = req.body
     try{
         const user = await User.findOne({
             where: {id: req.user.id}
@@ -22,7 +22,7 @@ router.post("/", auth,async(req,res) =>{
         if (!post){
             throw "Post nije pronadjen"
         }
-        const comments = await Comment.create({userId:user.id ,postId:post.id,votes,body});
+        const comments = await Comment.create({userId:user.id ,postId:post.id,body});
         if (!comments){
             throw "Nema komentara";
         }
@@ -52,30 +52,23 @@ router.put("/:id",auth, async(req,res) =>{
         return res.status(500).json({err: "An error occured"});
     }
 });
-router.get("/:id", async(req,res) =>{
-    try{
-        const id=req.params.id;
-        const comment = await Comment.findOne({where:{id}});
-        if (!comment){
-            return res.status(404).json({err:"Comment not found"});
-        }
-        return res.json(comment);
-    }catch(err){
-        return res.status(500).json(err);
-    }
-});
-router.get("/", async(req,res) =>{
+
+router.get("/:postId", async(req,res) =>{
     try{
         const offset=req.body.offset;
-        const id=req.body.id;
+        const { postId }=req.params
+        console.log(postId);
         const comments = await Comment.findAll({
-            where:{postId:id},
+            where:{postId},
             limit:10,
-            offset:{offset}||10
+            include: { model: User, as: 'user'},
+            offset:offset||0
         }
             );
+            console.log(comments);
         return res.json(comments);
     }catch(err){
+        console.log(err);
         return res.status(500).json(err);
     }
 });

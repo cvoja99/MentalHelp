@@ -25,6 +25,7 @@ catch(err){
 });
 router.post("/", async(req,res) =>{
     const {email, password} = req.body
+    console.log(req.body);
     try{
         const foundUser=await User.findOne({where:{email}});
         if (!foundUser){
@@ -51,6 +52,7 @@ router.post("/", async(req,res) =>{
                 res.json({token});}
         );
     }catch(err){
+        console.log(err);
         return res.status(500).json(err);
     }})
 module.exports=router;

@@ -1,4 +1,5 @@
 const checkPermissions = (foundUser, currentUser) => {
+    console.log(foundUser, currentUser);
     if(currentUser.tip === "Admin")
     return true;
     return foundUser.id === currentUser.id || typeMap(currentUser.tip) > typeMap(foundUser.tip);

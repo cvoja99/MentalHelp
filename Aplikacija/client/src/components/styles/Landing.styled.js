@@ -3,17 +3,17 @@ import styled from "styled-components";
 export const LandingStyled =styled.div`
 `
 export const TopNav=styled.nav`
-    position:fixed;
-    top: 0;
-    background-color:#ADD8E6;
-    width:100%;
-    justify-content:space-between;
-    border: 1px solid black;
-    ul{
-        display:flex;
-    }
-    font-size:20px;
-    padding:0px;
+position:fixed;
+top: 0;
+background-color:#ADD8E6;
+width:100%;
+justify-content:space-between;
+border: 1px solid black;
+ul{
+    display:flex;
+}
+font-size:20px;
+padding:0px;
 
 `
 export const Auth=styled.div`

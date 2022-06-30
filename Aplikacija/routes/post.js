@@ -1,13 +1,15 @@
 const express = require('express');
-const {Post,User,Comment, Sequelize} = require('../models');
+const {Post,User,Comment, Sequelize, PostVotes} = require('../models');
 const router = express.Router();
 const auth=require('../middleware/auth');
 const checkPermissions = require('../utils/helpers');
 router.delete("/:id", auth,async(req,res) =>{
-    const id = req.user.id;
+    const { id } = req.params;
+    console.log(req.params);
     try{
         const post = await Post.findOne({
-            where: {id}
+            where: {id},
+            include: {model: User, as: 'user'}
         });
         if(!post){
             return res.status(404).json({err:"Post not found"});
@@ -18,6 +20,7 @@ router.delete("/:id", auth,async(req,res) =>{
         await post.destroy();
         return res.json({message: "Post Deleted"});
     }catch(err){
+        console.log(err);
         return res.status(500).json({err: "An error occured"});
     }
 });
@@ -35,21 +38,20 @@ router.post("/",auth, async(req,res) =>{
         return res.status(500).json(err);
     }
 });
-router.get("/", auth,async(req,res) =>{
+router.get("/",async(req,res) =>{
     try{
-        const id=req.body.id;
         const offset=req.body.offset;
         const posts = await Post.findAll({
-            where:{userId:id},
             limit:10,
             offset:0,
-            include: {model: Comment, as: 'commentId'},
+            include: [{model: Comment, as: 'comments'}, {model: User, as:'user'}],
             attributes:{
                 include: [
                 [Sequelize.literal("(SELECT COUNT(*) FROM PostVotes where PostVotes.postId=Post.id)"), "votes"]
             ]
             },  
         });
+        console.log(posts);
         return res.json(posts);
     }catch(err){
         return res.status(500).json(err);
@@ -59,10 +61,10 @@ router.get("/:id", async(req,res) =>{
     try{
         const id=req.params.id;
         const post = await Post.findOne({
-            where:{userId:id},
+            where:{id},
             limit:10,
             offset:0,
-            include: {model: Comment, as: 'commentId'},
+            include: [{model: Comment, as: 'comments', include: { model: User, as: 'user'}}, { model: User, as: 'user'}],
             attributes:{
                 include: [
                 [Sequelize.literal("(SELECT COUNT(*) FROM PostVotes where PostVotes.postId=Post.id)"), "votes"]
@@ -76,12 +78,16 @@ router.get("/:id", async(req,res) =>{
     }
 });
 router.put("/:id", auth,async(req,res) =>{
-    const id = req.user.id;
     const { title, body, description,image} = req.body;
+    const { id } = req.params;
     try{
         const post = await Post.findOne({
-            where: {id}
+            where: {id},
+            include: {model: User, as: 'user'}
         });
+        if(!checkPermissions(post.user, req.user)) {
+            return res.status(403).json({err:"Forbidden"});
+        }
         if(!post){
             return res.status(404).json({err:"Post not found"});
         }
@@ -94,6 +100,7 @@ router.put("/:id", auth,async(req,res) =>{
         return res.json(post);
 
     }catch(err){
+        console.log(err);
         return res.status(500).json({err: "An error occured"});
     }
 });

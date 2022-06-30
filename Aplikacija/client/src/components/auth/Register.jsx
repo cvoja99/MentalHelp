@@ -6,9 +6,16 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
+import { REGISTER_FAIL, REGISTER_SUCCESS } from '../../actions/types';
 import { StyledTextField } from '../styles/StyledTextField';
-
+import {Link}from 'react-router-dom'
+import { useDispatch,useSelector }from'react-redux';
+import PropTypes from 'prop-types';
+import CircularProgress from '@mui/material/CircularProgress';
+import { AUTH_ERROR, LOADING, USER_LOADED } from '../../actions/types';
+const delay = ms => new Promise(res => setTimeout(res, ms));
 const Register = () => {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -16,19 +23,47 @@ const Register = () => {
     username:'',
     tip: 'Korisnik'
   })
+  
   const [isValid, setValidPassword] = React.useState(true);
   const [error,setError]=useState('');
+  const { loading } = useSelector(state => state.auth);
   const { tip,email, password,username,confirmPassword } = formData;
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if(password !== confirmPassword) {
       setValidPassword(false);
       setError("Passwords do not match");
-      return;
     } 
-      axios.post('http://localhost:5000/users',{tip,email,password,username}).then(res=>{console.log(res)}).catch(e=>setError(e.response.data.message));
-      },[tip,email,password,username, confirmPassword]);
-  console.log(formData);
-  return (
+    else {
+      const config={
+        headers:{
+        'Content-type':'application/json'
+        }
+    }
+    dispatch({
+      type:LOADING
+    })
+    const body=JSON.stringify({tip,email,password,username});
+    try{
+        await delay(400)
+        const res=await axios.post('http://localhost:5000/users',body,config);
+        dispatch({
+            type:REGISTER_SUCCESS,
+            payload:res.data
+        });
+    }
+    catch(err){
+        dispatch({
+            type:REGISTER_FAIL
+        })
+    }
+    }
+   
+      /*axios.post('http://localhost:5000/users',{tip,email,password,username}).then(res=>{console.log(res)}).catch(e=>setError(e.response.data.message));
+      },[tip,email,password,username, confirmPassword]*/}, [tip, email, password, username, confirmPassword, dispatch]);
+  return loading ? <Box sx={{ display: 'flex',  flexDirection: 'column',
+  alignItems: 'center',marginTop: 50 }}>
+  <CircularProgress />
+</Box>  :(
     <Container component="main" maxWidth="xs">
               <CssBaseline />
               <Box
@@ -106,8 +141,10 @@ const Register = () => {
             </div>}
           </Box>
     </Box>
+    <p>
+      Already have an account? <Link to='/login'>Sign In</Link>
+    </p>
     </Container>
   )
-}
-
-export default Register
+};
+export default Register;

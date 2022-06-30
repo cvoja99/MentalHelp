@@ -10,8 +10,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate({User,Comment}) {
-      this.belongsTo(User,{foreignKey: `userId`, as:'user'});
-      this.belongsTo(Comment,{foreignKey:'commentId', as:'comment'});
+      this.belongsTo(User,{foreignKey: `userId`, as:'user', onDelete: "CASCADE"});
+      this.belongsTo(Comment,{foreignKey:'commentId', as:'comment', onDelete: "CASCADE"});
     }
   }
   CommentVotes.init({

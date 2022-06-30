@@ -1,0 +1,12 @@
+export const REGISTER_SUCCESS='REGISTER_SUCCESS';
+export const REGISTER_FAIL='REGISTER_FAIL';
+export const GET_POSTS='GET_POSTS';
+export const POST_ERROR='POST_ERROR';
+export const USER_LOADED='USER_LOADED';
+export const LOADING = 'LOADING';
+export const AUTH_ERROR='AUTH_ERROR';
+export const LOGOUT="LOGOUT";
+export const POST_LOADING="POST_LOARDING";
+export const GET_COMMENTS="GET_COMMENTS";
+export const COMMENT_LOADING="COMMENT_LOADING";
+export const COMMENT_ERROR = "COMMENT_ERROR";
