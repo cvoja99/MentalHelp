@@ -7,7 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import styled from 'styled-components';
-import {Link, useNavigate}from 'react-router-dom';
+import {useNavigate}from 'react-router-dom';
 const StyledCard=styled(Card)`
 border:1px solid black;
 `
@@ -70,7 +70,9 @@ export default function OutlinedCard({post, onEdit, onVote, onDelete, isAuthenti
       </Typography>
     </CardContent>
     <StyledCardActions>
-    {isAuthenticated && (<Button size="small" onClick={onEdit}>Edit</Button>)}
+    {isAuthenticated && (<Button size="small" onClick={(e) => {
+      e.stopPropagation();
+      onEdit()}}>Edit</Button>)}
 
       <StyledTypography>
         Votes: {post.votes}

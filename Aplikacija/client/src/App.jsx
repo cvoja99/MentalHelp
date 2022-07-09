@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import {BrowserRouter, Route,Routes}from 'react-router-dom';
 import Landing from './components/layout/Landing';
 import Register from './components/auth/Register';
@@ -14,7 +14,9 @@ const theme = createTheme();
 const StyledContainer = styled(Container)`
   padding-top: 20px;
 `
-const App=()=>(
+const App=()=>{
+
+  return (
   <Provider store={store}>
   <ThemeProvider theme={theme}>
      <BrowserRouter>
@@ -30,6 +32,6 @@ const App=()=>(
     </BrowserRouter>
   </ThemeProvider>
   </Provider>
-);
+)};
 
 export default App;

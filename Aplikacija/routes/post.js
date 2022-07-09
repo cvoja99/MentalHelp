@@ -35,6 +35,7 @@ router.post("/",auth, async(req,res) =>{
         const post = await Post.create({title,body,description,image, userId: user.id });
         return res.json(post);
     }catch(err){
+        console.log(err);
         return res.status(500).json(err);
     }
 });

@@ -6,6 +6,7 @@ export const TopNav=styled.nav`
 position:fixed;
 top: 0;
 background-color:#ADD8E6;
+z-index: 999999;
 width:100%;
 justify-content:space-between;
 border: 1px solid black;

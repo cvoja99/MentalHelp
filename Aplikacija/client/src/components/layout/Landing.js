@@ -17,7 +17,7 @@ const Landing = () => {
             <LogoStyledPlacement> MentalHelp</LogoStyledPlacement>
             {!token && (<Button><li><Link to="/register">Sign up</Link></li></Button>)}
             {!token && (<Button> <li><Link to="/login">Login</Link></li></Button>)}
-            {token && (<Button> <li><Link to="/forum">Forum</Link></li></Button>)}
+            <Button> <li><Link to="/forum">Forum</Link></li></Button>
             {token && (<Button onClick={() => {
               dispatch({type: LOGOUT});
               navigate("/login");

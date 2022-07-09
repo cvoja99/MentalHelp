@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
-import {POST_LOADING, GET_POSTS } from '../actions/types';
+import {POST_LOADING, GET_POSTS, CHECK_LOGIN } from '../actions/types';
 
 const ContainerStyledForum=styled(Container)`
 width:30%
@@ -63,6 +63,8 @@ const onDelete = async (id) => {
     catch(err){
         if (err.response.status===403)
         alert("You cannot delete posts from other users!");
+        const res = await axios.get("http://localhost:5000/posts");
+        dispatch({type: GET_POSTS, payload: res.data })
         console.log(err.response.status);
         console.error(err);
     }
@@ -70,6 +72,8 @@ const onDelete = async (id) => {
 const onSubmit = React.useCallback(async () => {
     try {
         if(id) {
+            dispatch({type:POST_LOADING});
+            await delay(400);
             await axios.put(`http://localhost:5000/posts/${id}`, { title,body,description});
             const res = await axios.get("http://localhost:5000/posts");
         dispatch({type: GET_POSTS, payload: res.data })
@@ -95,6 +99,8 @@ const onSubmit = React.useCallback(async () => {
     } catch(e) {
         if (e.response.status===403)
         alert("You cannot edit other people's posts!");
+        const res = await axios.get("http://localhost:5000/posts");
+        dispatch({type: GET_POSTS, payload: res.data })
         console.error(e);
     }
 },[id, title, body, description, dispatch])
@@ -127,12 +133,16 @@ return loading ? <Box sx={{ display: 'flex',  flexDirection: 'column',
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              onClick={() => setFormData({
+              onClick={() =>
+                
+                setFormData({
                 id: null,
                 title: '',
                 body: '',
                 description: ''
-              })}
+              })
+            }
+
             >
               Close edit
             </Button>)}
