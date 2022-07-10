@@ -30,12 +30,8 @@ export const Auth=styled.div`
 export const LogoStyledPlacement=styled.div`
     text-align:right;
     align-items:center;
-    margin-right:80%;
+    margin-right:40%;
     
-`
-export const Button=styled.button`
-    text-align:top;
-    align-items:top;
 `
 
 

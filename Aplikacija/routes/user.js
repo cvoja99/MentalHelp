@@ -23,7 +23,8 @@ try{
     
     const payload={
         user:{
-            id:user.id
+            id:user.id,
+            userName: foundUser.username
         }
     }
     return jwt.sign(

@@ -40,7 +40,8 @@ router.post("/", async(req,res) =>{
         const payload={
             user:{
                 id:foundUser.id,
-                tip:foundUser.tip 
+                tip:foundUser.tip,
+                userName: foundUser.username
             }
         }
         return jwt.sign(

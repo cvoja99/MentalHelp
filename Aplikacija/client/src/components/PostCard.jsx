@@ -66,7 +66,7 @@ export default function OutlinedCard({post, onEdit, onVote, onDelete, isAuthenti
         {post.body}
       </Typography>
       <Typography variant="body2">
-        Created by: {post.user.email}
+        Created by: {post.user.username}
       </Typography>
     </CardContent>
     <StyledCardActions>

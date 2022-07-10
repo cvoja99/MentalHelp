@@ -7,6 +7,7 @@ import {
 const initialState={
     posts:[],
     post:null,
+    count:0,
     loading:true,
     error:{}
 }
@@ -16,7 +17,8 @@ export default function(state=initialState,action){
         case GET_POSTS:
             return{
                 ...state,
-                posts:payload,
+                posts:payload.posts,
+                count:payload.postCount,
                 loading:false
             }
          case POST_ERROR:

@@ -78,6 +78,8 @@ export default function OutlinedCard() {
     const { comments, loading } = useSelector(state => state.comment)
         useEffect(() => {
         const getPost = async () => {
+          dispatch({type:COMMENT_LOADING});
+          await delay(400);
             try {
                 if(postId) {
                 const res = await axios.get(`http://localhost:3000/posts/${postId}`);
