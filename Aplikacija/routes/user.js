@@ -4,6 +4,10 @@ const router = express.Router();
 const bcrypt=require("bcryptjs");
 const jwt=require("jsonwebtoken");
 const config = require('config');
+const { Op } = require('sequelize');
+const moment = require('moment');
+const auth=require('../middleware/auth');
+
 router.post("/", async(req,res) =>{
 const { tip, email, password,username} = req.body
 try{
@@ -19,12 +23,11 @@ try{
     }
     const salt=await bcrypt.genSalt(10);
     const pass=await bcrypt.hash(password,salt);
-    const user = await User.create({tip, email,password:pass,username});
-    
+    const user = await User.create({tip, email,password:pass,username,lastOnline:new Date().toISOString()});
     const payload={
         user:{
             id:user.id,
-            userName: foundUser.username
+            userName: user.username
         }
     }
     return jwt.sign(
@@ -48,6 +51,22 @@ try{
     {return res.status(500).json({message:'Password cannot be empty'});}
     return res.status(500).json(err);
 }})
+router.get("/strucna_lica",auth, async(req,res) =>{
+    
+    try{
+        const users = await User.findAll({
+            where:
+            {
+                tip:"Strucno lice",
+                lastOnline:{
+                    [Op.gte]: moment().subtract(60, 'minutes').toDate()
+                } 
+        }});
+        return res.json(users);
+    }catch(err){
+        return res.status(500).json({err: "An error occured"});
+    }
+});
 router.get("/:id", async(req,res) =>{
     try{
         id=req.params.id;
@@ -57,6 +76,7 @@ router.get("/:id", async(req,res) =>{
         return res.status(500).json({err: "An error occured"});
     }
 });
+
 router.put("/:id", async(req,res) =>{
     const id = req.params.id;
     const { tip, email, username} = req.body;

@@ -46,7 +46,9 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty:true,
         notNull:true
       }
-     
+    },
+    lastOnline:{
+      type:DataTypes.DATE,
     }
   },
   {

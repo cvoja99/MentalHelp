@@ -13,6 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import {POST_LOADING, GET_POSTS, CHECK_LOGIN } from '../actions/types';
 import { SearchBar } from './SearchBar';
 import {PaginationStyled} from './Pagination';
+import {UserList}from'./UserList';
 
 const ContainerStyledForum=styled(Container)`
 width:30%
@@ -224,6 +225,9 @@ return loading ? <Box sx={{ display: 'flex',  flexDirection: 'column',
             >
               {id ? "Edit post" : "Create post"}
             </Button>
+            <UserList>
+              
+            </UserList>
           </Box>
     </Box>
             
