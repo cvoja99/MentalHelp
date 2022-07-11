@@ -14,6 +14,7 @@ import {POST_LOADING, GET_POSTS, CHECK_LOGIN } from '../actions/types';
 import { SearchBar } from './SearchBar';
 import {PaginationStyled} from './Pagination';
 import {UserList}from'./UserList';
+import {ChatBox} from './ChatBox';
 
 const ContainerStyledForum=styled(Container)`
 width:30%
@@ -37,7 +38,7 @@ const [page, setPage] = React.useState(1);
 const { id, title, body, description } = formData;
 const { posts, loading } = useSelector(state => state.post)
 const { token: isAuthenticated } = useSelector(state => state.auth);
-
+const [strucnoLice,setStrucnoLice]=React.useState(null);
 const onVote = async (id) => {
     try {
     dispatch({type:POST_LOADING})
@@ -225,9 +226,12 @@ return loading ? <Box sx={{ display: 'flex',  flexDirection: 'column',
             >
               {id ? "Edit post" : "Create post"}
             </Button>
-            <UserList>
-              
+            <UserList setStrucnoLice={setStrucnoLice}>
+
             </UserList>
+            {strucnoLice && (<ChatBox targetUserId={strucnoLice}>
+
+            </ChatBox>)}
           </Box>
     </Box>
             

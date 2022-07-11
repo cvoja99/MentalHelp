@@ -14,8 +14,9 @@ const StyledButton = styled(ListItemButton)`
     border-radius: 20px;
     margin: 5px;
 `;
-export const UserList=() => {
+export const UserList=({setStrucnoLice}) => {
     const [userList,setUserList] = React.useState([]);
+    
     React.useEffect(() => {
         const getUsers =  async() => {
             const res = await axios.get("http://localhost:5000/users/strucna_lica");
@@ -32,7 +33,9 @@ export const UserList=() => {
     >
         <div>Online strucna lica:</div>
         {userList && userList.map(user => <ListItem disablePadding>
-        <StyledButton>
+        <StyledButton onClick={() => {
+            setStrucnoLice(user.id);
+        }}>
           <ListItemText primary={user.username  } />
           <CircleIcon color="green" htmlColor='green'/>  
         </StyledButton>
