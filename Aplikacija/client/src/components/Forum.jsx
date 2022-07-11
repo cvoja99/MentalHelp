@@ -10,7 +10,11 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
-import {POST_LOADING, GET_POSTS } from '../actions/types';
+import {POST_LOADING, GET_POSTS, CHECK_LOGIN } from '../actions/types';
+import { SearchBar } from './SearchBar';
+import {PaginationStyled} from './Pagination';
+import {UserList}from'./UserList';
+import {ChatBox} from './ChatBox';
 
 const ContainerStyledForum=styled(Container)`
 width:30%
@@ -28,11 +32,13 @@ const [formData, setFormData] = React.useState({
     body: '',
     description: ''
 })
+const [searchQuery, setSearchQuery] = React.useState("");
+const [radioValue, setRadioValue] = React.useState("Title");
+const [page, setPage] = React.useState(1);
 const { id, title, body, description } = formData;
 const { posts, loading } = useSelector(state => state.post)
 const { token: isAuthenticated } = useSelector(state => state.auth);
-console.log(!!isAuthenticated);
-console.log(posts);
+const [strucnoLice,setStrucnoLice]=React.useState(null);
 const onVote = async (id) => {
     try {
     dispatch({type:POST_LOADING})
@@ -45,13 +51,32 @@ const onVote = async (id) => {
         console.error(e);
     }
 }
+
+const onSearch = React.useCallback(() => {
+  console.log('HERE')
+  const searchPosts = async () => {
+  const res = await axios.get("http://localhost:5000/posts", { params: { offset: (page-1)*10, ...(radioValue === 'Title' && {title: searchQuery}),...(radioValue === 'Username' && {userName: searchQuery}) } });
+  dispatch({type: GET_POSTS, payload: res.data });
+  }
+  searchPosts();
+
+}, [searchQuery, radioValue, page]);
 React.useEffect(() => {
     const getPosts =  async() => {
-        const res = await axios.get("http://localhost:5000/posts");
+      dispatch({type:POST_LOADING});
+      await delay(400);
+        const res = await axios.get("http://localhost:5000/posts", { params: {offset: (page-1)*10}});
         dispatch({type: GET_POSTS, payload: res.data })
     }
     getPosts();
 }, [])
+React.useEffect(() =>{
+  const searchPosts = async () => {
+    const res = await axios.get("http://localhost:5000/posts", { params: { offset: (page-1)*10, ...(radioValue === 'Title' && {title: searchQuery}),...(radioValue === 'Username' && {userName: searchQuery}) } });
+    dispatch({type: GET_POSTS, payload: res.data });
+    }
+    searchPosts();
+}, [page]);
 const onDelete = async (id) => {
     try{
         dispatch({type:POST_LOADING});
@@ -63,6 +88,8 @@ const onDelete = async (id) => {
     catch(err){
         if (err.response.status===403)
         alert("You cannot delete posts from other users!");
+        const res = await axios.get("http://localhost:5000/posts");
+        dispatch({type: GET_POSTS, payload: res.data })
         console.log(err.response.status);
         console.error(err);
     }
@@ -70,6 +97,8 @@ const onDelete = async (id) => {
 const onSubmit = React.useCallback(async () => {
     try {
         if(id) {
+            dispatch({type:POST_LOADING});
+            await delay(400);
             await axios.put(`http://localhost:5000/posts/${id}`, { title,body,description});
             const res = await axios.get("http://localhost:5000/posts");
         dispatch({type: GET_POSTS, payload: res.data })
@@ -92,18 +121,23 @@ const onSubmit = React.useCallback(async () => {
             body: '',
             description: ''
           })
+        setPage(1);
     } catch(e) {
         if (e.response.status===403)
         alert("You cannot edit other people's posts!");
+        const res = await axios.get("http://localhost:5000/posts");
+        dispatch({type: GET_POSTS, payload: res.data })
         console.error(e);
     }
 },[id, title, body, description, dispatch])
+const {count}= useSelector(state=>state.post);
 return loading ? <Box sx={{ display: 'flex',  flexDirection: 'column',
   alignItems: 'center',marginTop: 50 }}>
   <CircularProgress />
 </Box>  : (
         <ForumTopDiv>
             <ContainerStyledForum>
+            {isAuthenticated&&(<SearchBar radioValue={radioValue} setRadioValue={setRadioValue} searchQuery={searchQuery} setSearchQuery={setSearchQuery} onSearch={(val) => { onSearch(val)}} />)}
             {posts.map(post => (<OutlinedCard isAuthenticated={!!isAuthenticated} post={post} onDelete={() => onDelete(post.id)} onVote={() => onVote(post.id)} onEdit={() => {
                  setFormData({
                     id: post.id,
@@ -112,6 +146,7 @@ return loading ? <Box sx={{ display: 'flex',  flexDirection: 'column',
                     description: post.description
                 });
             }} />))}
+            <PaginationStyled count={Math.ceil(count/10)} page={page} setPage={setPage}></PaginationStyled>
             </ContainerStyledForum>
             {!!isAuthenticated && (<div>
             <Box
@@ -127,12 +162,16 @@ return loading ? <Box sx={{ display: 'flex',  flexDirection: 'column',
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              onClick={() => setFormData({
+              onClick={() =>
+                
+                setFormData({
                 id: null,
                 title: '',
                 body: '',
                 description: ''
-              })}
+              })
+            }
+
             >
               Close edit
             </Button>)}
@@ -179,7 +218,7 @@ return loading ? <Box sx={{ display: 'flex',  flexDirection: 'column',
                 autoComplete="description"
                 autoFocus
             />
-<Button
+            <Button
               type="submit"
               fullWidth
               variant="contained"
@@ -187,6 +226,12 @@ return loading ? <Box sx={{ display: 'flex',  flexDirection: 'column',
             >
               {id ? "Edit post" : "Create post"}
             </Button>
+            <UserList setStrucnoLice={setStrucnoLice}>
+
+            </UserList>
+            {strucnoLice && (<ChatBox targetUserId={strucnoLice}>
+
+            </ChatBox>)}
           </Box>
     </Box>
             

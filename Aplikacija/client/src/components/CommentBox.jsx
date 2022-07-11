@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React from "react";
 import  Divider from "@mui/material/Divider"
 import  Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -36,8 +36,11 @@ function CommentBox({comments, postId, onEdit}) {
 }
   console.log({comments});  
   const dispatch = useDispatch();
+ 
   const onDelete = async (id) => {
     try {
+      dispatch({type: COMMENT_LOADING});
+      await delay(500);
       await axios.delete(`http://localhost:3000/comments/${id}`);
       const res = await axios.get(`http://localhost:5000/comments/${postId}`)
                 console.log(res);

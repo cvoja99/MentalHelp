@@ -5,6 +5,7 @@ const bcrypt=require('bcryptjs');
 const User=require('../models').User;
 const config = require('config');
 const jwt=require("jsonwebtoken");
+const user = require("../models/user");
 router.get('/',auth, async (req,res)=>{
     userId=req.user.id;
 try{
@@ -31,16 +32,17 @@ router.post("/", async(req,res) =>{
         if (!foundUser){
             return res.status(400).json({errors:[{msg:'Invalid credentials'}]})
         }
-        
         const passMatch=await bcrypt.compare(password,foundUser.password);
         if (!passMatch)
         {
             return res.status(400).json({errors:[{msg:'Invalid credentials'}]})
         }
+        await User.update({lastOnline:new Date().toISOString() },{where: { id: foundUser.id}});
         const payload={
             user:{
                 id:foundUser.id,
-                tip:foundUser.tip 
+                tip:foundUser.tip,
+                userName: foundUser.username
             }
         }
         return jwt.sign(

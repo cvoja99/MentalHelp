@@ -3,16 +3,19 @@ const { body } = require('express-validator');
 const {Whisper,User} = require('../models');
 const router = express.Router();
 const auth=require('../middleware/auth');
-router.post("/", async(req,res) =>{
-    const { userId,targetuserId,body } = req.body;
+router.post("/",auth,    async(req,res) =>{
+    const { targetUserId,body } = req.body;
+    console.log(targetUserId)
+    console.log(body);
+    const { id } = req.user;
     try{
         const user = await User.findOne({
-            where: {id: userId}
+            where: {id}
         });
         if (!user)
         throw "User nije pronadjen";
         const targetuser=await User.findOne({
-            where: {id:targetuserId}
+            where: {id:targetUserId.targetUserId}
         });
         if (!targetuser)
         throw "Target User nije pronadjen";
@@ -37,7 +40,6 @@ router.delete("/:id", async(req,res) =>{
 router.get("/", auth,async(req,res) =>{
     const {targetuserId,offset}=req.body;
     const id=req.user.id;
-    offset=req.body.offset;
     try{
         if (!req.user.id)
         throw "User sa tim idem nije pronadjen";

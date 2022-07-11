@@ -26,11 +26,6 @@ const Login = () => {
   const { email, password } = formData;
   const { loading } = useSelector(state => state.auth);
   const handleSubmit = useCallback(async () => {
-    
-    
-      /*if (localStorage.token){
-        setAuthToken(localStorage.token);
-      }*/
 
       dispatch({
         type: LOADING
@@ -51,11 +46,8 @@ const Login = () => {
         })
       }
     }
-    /*axios.post('http://localhost:5000/auth', {email, password}).then(res => { console.log(res)}).catch(e => console.error(e.response));
-  }*/,[email, password,dispatch]);
-  /*if(isAuthenticated){
-    return <Redirect to="/forum"/>
-  }*/
+    ,[email, password,dispatch]);
+
   return loading ? <Box sx={{ display: 'flex',  flexDirection: 'column',
   alignItems: 'center',marginTop: 50 }}>
   <CircularProgress />

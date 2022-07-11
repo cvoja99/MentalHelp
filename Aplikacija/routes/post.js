@@ -35,25 +35,55 @@ router.post("/",auth, async(req,res) =>{
         const post = await Post.create({title,body,description,image, userId: user.id });
         return res.json(post);
     }catch(err){
+        console.log(err);
         return res.status(500).json(err);
     }
 });
 router.get("/",async(req,res) =>{
     try{
-        const offset=req.body.offset;
+        let where={};
+        let whereInclude={};
+        let Op=Sequelize.Op;
+        const {title,userName, offset}=req.query
+        if (title){
+            where = {
+                ...where,
+                title:{ [Op.like]: `%${title}%`
+            }
+        }
+        }
+        if(userName){
+            whereInclude={
+                ...whereInclude,
+                userName:{[Op.like]:`%${userName}`}
+            }
+        }
         const posts = await Post.findAll({
+            where,
             limit:10,
-            offset:0,
-            include: [{model: Comment, as: 'comments'}, {model: User, as:'user'}],
+            offset:Number(offset) || 0,
+            include: [{model: Comment, as: 'comments'},
+             {model: User, as:'user',
+              where: whereInclude
+            }],
             attributes:{
                 include: [
                 [Sequelize.literal("(SELECT COUNT(*) FROM PostVotes where PostVotes.postId=Post.id)"), "votes"]
             ]
             },  
         });
-        console.log(posts);
-        return res.json(posts);
+        const postCount = await Post.count({
+            where,
+            include: [
+             {model: User, as:'user',
+              where: whereInclude
+            }],
+        });
+        console.log(posts.length);
+        console.log(postCount);
+        return res.json({posts,postCount});
     }catch(err){
+        console.log(err);
         return res.status(500).json(err);
     }
 });

@@ -6,6 +6,7 @@ export const USER_LOADED='USER_LOADED';
 export const LOADING = 'LOADING';
 export const AUTH_ERROR='AUTH_ERROR';
 export const LOGOUT="LOGOUT";
+export const CHECK_LOGIN = "CHECK_LOGIN";
 export const POST_LOADING="POST_LOARDING";
 export const GET_COMMENTS="GET_COMMENTS";
 export const COMMENT_LOADING="COMMENT_LOADING";

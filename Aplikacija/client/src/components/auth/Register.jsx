@@ -60,8 +60,7 @@ const Register = () => {
     }
     }
    
-      /*axios.post('http://localhost:5000/users',{tip,email,password,username}).then(res=>{console.log(res)}).catch(e=>setError(e.response.data.message));
-      },[tip,email,password,username, confirmPassword]*/}, [tip, email, password, username, confirmPassword, dispatch]);
+      }, [tip, email, password, username, confirmPassword, dispatch]);
   return loading ? <Box sx={{ display: 'flex',  flexDirection: 'column',
   alignItems: 'center',marginTop: 50 }}>
   <CircularProgress />

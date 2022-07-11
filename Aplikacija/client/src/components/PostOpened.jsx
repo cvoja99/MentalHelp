@@ -11,6 +11,8 @@ import TextField from '@mui/material/TextField';
 import axios from '../utils/axios';
 import CommentBox from "./CommentBox";
 import {GET_COMMENTS,COMMENT_LOADING}from '../actions/types';
+import CircularProgress from '@mui/material/CircularProgress';
+
 import { useSelector, useDispatch } from 'react-redux';
 const StyledCard=styled(Card)`
 border:1px solid black;
@@ -40,10 +42,11 @@ export default function OutlinedCard() {
     const onSubmit = React.useCallback(async () => {
         try {
             if(id) {
+                dispatch({type:COMMENT_LOADING});
+                await delay(400);
                 await axios.put(`http://localhost:5000/comments/${id}`, {body});
                 const res = await axios.get(`http://localhost:5000/comments/${postId}`)
                 console.log(res);
-                ;
             dispatch({type: GET_COMMENTS, payload: res.data })
             setFormData({
                 id: null,
@@ -72,10 +75,11 @@ export default function OutlinedCard() {
     const { id:postId } = useParams();
     const [post, setPost] = useState(null)
     const { token: isAuthenticated } = useSelector(state => state.auth);
-    const { loading } = useSelector(state => state.post);
-    const { comments } = useSelector(state => state.comment)
+    const { comments, loading } = useSelector(state => state.comment)
         useEffect(() => {
         const getPost = async () => {
+          dispatch({type:COMMENT_LOADING});
+          await delay(400);
             try {
                 if(postId) {
                 const res = await axios.get(`http://localhost:3000/posts/${postId}`);
@@ -91,7 +95,10 @@ export default function OutlinedCard() {
         }
        getPost();
     }, [postId])
-    return post ? (
+    return loading ? <Box sx={{ display: 'flex',  flexDirection: 'column',
+    alignItems: 'center',marginTop: 50 }}>
+    <CircularProgress />
+  </Box> : (post ? (
     <React.Fragment>
     <StyledBox sx={{ marginTop:15,minWidth: 275, cursor: 'pointer' }} onClick={() => console.log("sadfd")}>
       <StyledCard variant="outlined">
@@ -120,7 +127,7 @@ export default function OutlinedCard() {
 
       </StyledCard>
     </StyledBox>
-    <Box
+    {isAuthenticated && (<Box
           sx={{
             marginTop: 8,
             display: 'flex',
@@ -169,7 +176,7 @@ export default function OutlinedCard() {
               {id ? "Edit comment" : "Create comment"}
             </Button>
           </Box>
-    </Box>
+    </Box>)}
     <CommentBox comments={comments} postId={postId} onEdit={({id, body}) => {
         setFormData({
             id,
@@ -179,5 +186,5 @@ export default function OutlinedCard() {
 
     </CommentBox>
     </React.Fragment>
-  ) : null;
+  ) : null);
 }

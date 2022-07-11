@@ -6,6 +6,7 @@ export const TopNav=styled.nav`
 position:fixed;
 top: 0;
 background-color:#ADD8E6;
+z-index: 999999;
 width:100%;
 justify-content:space-between;
 border: 1px solid black;
@@ -29,12 +30,8 @@ export const Auth=styled.div`
 export const LogoStyledPlacement=styled.div`
     text-align:right;
     align-items:center;
-    margin-right:80%;
+    margin-right:40%;
     
-`
-export const Button=styled.button`
-    text-align:top;
-    align-items:top;
 `
 
 
