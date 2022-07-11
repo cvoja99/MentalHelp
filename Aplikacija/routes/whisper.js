@@ -3,11 +3,13 @@ const { body } = require('express-validator');
 const {Whisper,User} = require('../models');
 const router = express.Router();
 const auth=require('../middleware/auth');
+const { Op } = require('sequelize');
 router.post("/",auth,    async(req,res) =>{
     const { targetUserId,body } = req.body;
     console.log(targetUserId)
     console.log(body);
-    const { id } = req.user;
+    const  id  = req.user.id;
+    console.log(req.body);
     try{
         const user = await User.findOne({
             where: {id}
@@ -15,13 +17,14 @@ router.post("/",auth,    async(req,res) =>{
         if (!user)
         throw "User nije pronadjen";
         const targetuser=await User.findOne({
-            where: {id:targetUserId.targetUserId}
+            where: {id:targetUserId}
         });
         if (!targetuser)
         throw "Target User nije pronadjen";
         const whispers = await Whisper.create({userId: user.id,targetuserId:targetuser.id,body});
         return res.json(whispers);
     }catch(err){
+        console.log(err);
         return res.status(500).json(err);
     }
 });
@@ -38,31 +41,38 @@ router.delete("/:id", async(req,res) =>{
     }
 });
 router.get("/", auth,async(req,res) =>{
-    const {targetuserId,offset}=req.body;
+    const {targetuserId}=req.query;
     const id=req.user.id;
     try{
         if (!req.user.id)
         throw "User sa tim idem nije pronadjen";
         let whispers;
-        if (!targetuserId)
+        console.log(req.query);
+        if (targetuserId)
         {
              whispers = await Whisper.findAll({
-                where:{id,targetuserId},
+                where: {
+                    [Op.or]: [
+                      { userId:id,targetuserId},
+                      { userId:targetuserId,targetuserId:id }
+                    ]
+                  },
                 limit:10,
-                offset:{offset}||0
+                offset:0
             });
         }
         else
         {
             whispers= await Whisper.findAll({
-                where:{userId},
+                where:{id},
                 limit:10,
-                offset:{offset}||0
+                offset:0
             });
         }
         return res.json(whispers);
     
     }catch(err){
+        console.log(err);
         return res.status(500).json(err);
     }
     });
