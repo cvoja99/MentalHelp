@@ -52,18 +52,26 @@ try{
     return res.status(500).json(err);
 }})
 router.get("/strucna_lica",auth, async(req,res) =>{
-    
+    const tip =req.user.tip;
+    if (tip==="Admin")
+        {
+            return res.json([]);
+        }
     try{
         const users = await User.findAll({
-            where:
-            {
-                tip:"Strucno lice",
+            where: 
+            { 
+                tip: tip === 'Korisnik' ? 'Strucno lice' : 'Korisnik',
                 lastOnline:{
                     [Op.gte]: moment().subtract(60, 'minutes').toDate()
                 } 
-        }});
+        }
+        
+    });
+    console.log(users);
         return res.json(users);
     }catch(err){
+        console.log(err);
         return res.status(500).json({err: "An error occured"});
     }
 });

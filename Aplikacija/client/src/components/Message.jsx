@@ -20,12 +20,10 @@ const StyledDiv2=styled.div`
 export const MessageLeft = (props) => {
     const message = props.message ? props.message : "no message";
     const timestamp = props.timestamp ? props.timestamp : "";
-    const displayName = props.displayName ? props.displayName : "名無しさん";
     return (
       <>
         <StyledDiv>
           <div>
-            <div >{displayName}</div>
             <div>
               <div>
                 <p >{message}</p>
@@ -48,5 +46,6 @@ export const MessageLeft = (props) => {
         </div>
       </StyledDiv2>
     );
+
   };
   

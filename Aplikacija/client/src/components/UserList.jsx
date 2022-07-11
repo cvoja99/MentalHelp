@@ -2,10 +2,8 @@ import * as React from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CircleIcon from '@mui/icons-material/Circle';
-import StarIcon from '@mui/icons-material/Star';
 import axios from '../utils/axios';
 import styled from 'styled-components';
 
@@ -25,13 +23,13 @@ export const UserList=({setStrucnoLice}) => {
         }
         getUsers();
     }, [])
-    
+    console.log(userList);
   return (
     <List
       sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
       aria-label="contacts"
     >
-        <div>Online strucna lica:</div>
+        {userList.length>0 && <div>Online:</div> }
         {userList && userList.map(user => <ListItem disablePadding>
         <StyledButton onClick={() => {
             setStrucnoLice(user.id);
